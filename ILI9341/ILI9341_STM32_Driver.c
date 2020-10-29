@@ -497,7 +497,7 @@ void ILI9341_Show_Sccb(uint16_t *p, uint16_t width, uint16_t height, uint16_t di
 	  uint32_t i,j;
     uint16_t color = 0;
 
-    ILI9341_Set_Address(0,0,dis_width-1,dis_height-1);//设置显示区域 
+    ILI9341_Set_Address(10,10,10+dis_width-1,10+dis_height-1);//设置显示区域 
     
     for(j=0;j<dis_height;j++)
     {

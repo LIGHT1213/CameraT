@@ -104,10 +104,9 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
     //HAL_UART_Receive_IT(&huart4,cmd,1);
-    HAL_SPI_Receive_IT(&hspi1,cmd,4);
+    HAL_SPI_Receive_IT(&hspi1,cmd,1);
     //HAL_SPI_Receive_IT(&hspi1,(uint8_t*)scc8660_csi_image,SCC8660_CSI_PIC_W*SCC8660_CSI_PIC_H*2);
-		//HAL_GPIO_WritePin(CameraDC_GPIO_Port,CameraDC_Pin,GPIO_PIN_SET);
-    //HAL_SPI_Receive_IT(&hspi1,(uint8_t*)scc8660_csi_image,1);
+		//HAL_SPI_Receive_IT(&hspi1,(uint8_t*)scc8660_csi_image,4);
     ILI9341_Init();
     ILI9341_Fill_Screen(WHITE);
     ILI9341_Set_Rotation(SCREEN_HORIZONTAL_2);
@@ -202,7 +201,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     if(huart==&huart4)
     {
 
-        if(cmd[0]!=0x09&&count==0)
+        if(cmd[0]!=0x00&&count==0)
         {
             count=0;
         }
@@ -228,7 +227,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         }
         else
         {
-						
             HAL_UART_Receive_IT(&huart4,(uint8_t*)scc8660_csi_image,SCC8660_CSI_PIC_W*SCC8660_CSI_PIC_H*2);
             ImageRecFlag=1;
             count=0;
@@ -244,79 +242,58 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         if(ImageRecFlag==1)
         {
             ILI9341_Show_Sccb(scc8660_csi_image[0],SCC8660_CSI_PIC_W, SCC8660_CSI_PIC_H, 160, 120);
-						
-						HAL_GPIO_WritePin(CameraDC_GPIO_Port,CameraDC_Pin,GPIO_PIN_RESET);
-						HAL_SPI_Receive_IT(&hspi1,cmd,4);
             ImageRecFlag=0;
         }
     }
 }
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
 {
-    static uint32_t countP;
+    static uint32_t count=4;
     if(hspi==&hspi1)
     {
-			
-			if(cmd[0]==0x09&&cmd[1]==0xFF&&cmd[2]==0x01&&cmd[3]==0x01)
-			{
-				cmd[3]=0xaa;
-				HAL_GPIO_WritePin(CameraDC_GPIO_Port,CameraDC_Pin,GPIO_PIN_SET);
-				HAL_SPI_Receive_IT(&hspi1,(uint8_t*)scc8660_csi_image,SCC8660_CSI_PIC_W*SCC8660_CSI_PIC_H*2);
-				ImageRecFlag=1;
-			}
-			else
-			{
-				HAL_GPIO_WritePin(CameraDC_GPIO_Port,CameraDC_Pin,GPIO_PIN_RESET);
-				HAL_SPI_Receive_IT(&hspi1,cmd,4);
-				count++;
-			}
-//        if(cmd[0]!=0x00&&count==0)
-//        {
-//            count=0;
-//        }
-//        else if(cmd[1]!=0xff&&count==1)
-//        {
-//            count=0;
-//        }
-//        else if(cmd[2]!=0x01&&count==2)
-//        {
-//            count=0;
-//        }
-//        else if(cmd[3]!=0x01&&count==3)
-//        {
-//            count=0;
-//        }
+        if(cmd[0]!=0x00&&count==0)
+        {
+            count=0;
+        }
+        else if(cmd[1]!=0xff&&count==1)
+        {
+            count=0;
+        }
+        else if(cmd[2]!=0x01&&count==2)
+        {
+            count=0;
+        }
+        else if(cmd[3]!=0x01&&count==3)
+        {
+            count=0;
+        }
+        else
+        {
+            count++;
+        }
+        if(count<=3)
+        {
+            //HAL_UART_Receive_IT(&huart4,&cmd[count],1);
+						HAL_SPI_Receive_IT(&hspi1,&cmd[count],1);
+        }
 //        else
 //        {
-//            count++;
-//        }
-//        if(count<=3)
-//        {
-//            //HAL_UART_Receive_IT(&huart4,&cmd[count],1);
-//            HAL_SPI_Receive_IT(&hspi1,&cmd[count],4);
-//        }
-//        else
-//        {
-//					HAL_GPIO_WritePin(CameraDC_GPIO_Port,CameraDC_Pin,GPIO_PIN_SET);
 //            //HAL_UART_Receive_IT(&huart4,(uint8_t*)scc8660_csi_image,SCC8660_CSI_PIC_W*SCC8660_CSI_PIC_H*2);
 //						HAL_SPI_Receive_IT(&hspi1,(uint8_t*)scc8660_csi_image,SCC8660_CSI_PIC_W*SCC8660_CSI_PIC_H*2);
 //            ImageRecFlag=1;
 //            count=0;
 //        }
-//        else
-//        {
-//            //for(int i=0; i<SCC8660_CSI_PIC_W*SCC8660_CSI_PIC_H*2; i=i+4)
-//            
-//            HAL_SPI_Receive_IT(&hspi1,(uint8_t*)scc8660_csi_image+countP,1);
-//						countP=countP+1;
-//            if(countP>=SCC8660_CSI_PIC_W*SCC8660_CSI_PIC_H*2)
-//            {
-//                ImageRecFlag=1;
-//                countP=0;
-//							count=0;
-//            }
-//						
-//        }
+				else
+				{
+        //for(int i=0; i<SCC8660_CSI_PIC_W*SCC8660_CSI_PIC_H*2; i=i+4)
+				count=count+4;
+            HAL_SPI_Receive_IT(&hspi1,(uint8_t*)scc8660_csi_image+count,4);
+				if(count>=SCC8660_CSI_PIC_W*SCC8660_CSI_PIC_H*2)
+				{
+        ImageRecFlag=1;
+				count=0;
+				}
+				}
     }
 }
 /* USER CODE END 4 */

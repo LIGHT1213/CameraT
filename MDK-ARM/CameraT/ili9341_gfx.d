@@ -40,4 +40,5 @@ camerat/ili9341_gfx.o: ..\ILI9341\ILI9341_GFX.c \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart_ex.h \
   ..\ILI9341\ILI9341_GFX.h ..\Core\Inc\gpio.h ..\Core\Inc\main.h \
-  ..\ILI9341\5x5_font.h ..\Core\Inc\spi.h
+  ..\SpiSalverRec\SpiRec.h ..\Core\Inc\main.h ..\ILI9341\5x5_font.h \
+  ..\Core\Inc\spi.h

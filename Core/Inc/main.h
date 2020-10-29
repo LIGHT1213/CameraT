@@ -32,7 +32,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "SpiRec.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -58,6 +58,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define CameraDC_Pin GPIO_PIN_2
+#define CameraDC_GPIO_Port GPIOA
 #define LCD_DC_Pin GPIO_PIN_15
 #define LCD_DC_GPIO_Port GPIOE
 #define LCD_CS_Pin GPIO_PIN_12
